@@ -50,9 +50,6 @@ class VoiceCloneTest:
         self.voice_cloning = VoiceCloningService(self.config)
         self.tts = TTSService(self.config)
         
-        # 确保输出目录存在
-        os.makedirs("output", exist_ok=True)
-        
         print("\n配置完成！")
     
     async def check_status(self):
@@ -92,32 +89,41 @@ class VoiceCloneTest:
             return
             
         while True:
-            # 从input.txt文件读取文本
+            # 获取用户输入的文件路径
+            print("\n请输入文本文件路径:")
+            print("Windows 示例: C:\\Users\\用户名\\Documents\\text.txt")
+            print("macOS 示例: /Users/用户名/Documents/text.txt")
+            file_path = input("路径: ").strip()
+            
+            if not file_path:
+                print("错误: 文件路径不能为空！")
+                continue
+                
             try:
-                if not os.path.exists('input.txt'):
-                    print("错误: input.txt 文件不存在！")
-                    return
+                if not os.path.exists(file_path):
+                    print(f"错误: 文件 {file_path} 不存在！")
+                    continue
                     
-                with open('input.txt', 'r', encoding='utf-8') as f:
+                with open(file_path, 'r', encoding='utf-8') as f:
                     text = f.read().strip()
                     
                 if not text:
-                    print("错误: input.txt 文件为空！")
-                    return
+                    print(f"错误: 文件 {file_path} 为空！")
+                    continue
                     
                 # 检查文本字节长度
                 text_bytes = len(text.encode('utf-8'))
                 print(f"\n待合成文本的字节长度: {text_bytes}")
                     
                 if text_bytes > 1024:
-                    print("错误: 文本长度超过1024字节限制，请减少input.txt中的文本内容！")
-                    return
+                    print("错误: 文本长度超过1024字节限制，请减少文件中的文本内容！")
+                    continue
                     
                 print(f"\n待合成文本内容:\n{text}")
                 break
             except Exception as e:
                 print(f"读取文件失败: {str(e)}")
-                return
+                continue
             
         while True:
             speed = input("\n请输入语速(0.2-3.0，默认1.0): ").strip() or "1.0"
@@ -143,9 +149,29 @@ class VoiceCloneTest:
             
         try:
             
-            # 生成带时间戳的文件名
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_path = f"output/{prefix}_{timestamp}.mp3"
+            while True:
+                # 获取用户输入的保存路径
+                save_dir = input("\n请输入保存目录路径: ").strip()
+                if not save_dir:
+                    print("错误: 保存目录路径不能为空！")
+                    continue
+                
+                try:
+                    # 确保目录存在
+                    os.makedirs(save_dir, exist_ok=True)
+                    
+                    # 检查目录是否可写
+                    if not os.access(save_dir, os.W_OK):
+                        print(f"错误: 没有权限写入目录 {save_dir}")
+                        continue
+                        
+                    # 生成带时间戳的文件名
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    output_path = os.path.join(save_dir, f"{prefix}_{timestamp}.mp3")
+                    break
+                except Exception as e:
+                    print(f"错误: 创建保存目录失败: {str(e)}")
+                    continue
             
             print("\n正在合成语音...")
             await self.tts.synthesize_to_file(

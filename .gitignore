@@ -1,12 +1,6 @@
-# Python
+.DS_Store
+*.spec
+build/
+dist/
 __pycache__/
-*.py[cod]
-*$py.class
-
-# 输出目录
-output/
-*.mp3
-
-# 环境文件
-.env
-.env.*
+*.pyc

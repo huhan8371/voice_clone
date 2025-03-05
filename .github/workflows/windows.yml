@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  test:
     runs-on: windows-latest
     strategy:
       matrix:
@@ -50,3 +50,41 @@ jobs:
       run: |
         python -c "from core import Config, VoiceCloningService, TTSService"
       shell: cmd
+
+  build-app:
+    needs: test
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -e .
+        pip install pyinstaller
+      shell: cmd
+    
+    - name: Build Windows application
+      run: |
+        pyinstaller --name="VoiceClone" --onefile --add-data="core;core" voice_clone_test.py
+      shell: cmd
+    
+    - name: Package application
+      run: |
+        cd dist
+        powershell Compress-Archive -Path VoiceClone.exe -DestinationPath VoiceClone-Windows.zip
+      shell: cmd
+    
+    - name: Upload application
+      uses: actions/upload-artifact@v2
+      with:
+        name: VoiceClone-Windows
+        path: |
+          dist/VoiceClone.exe
+          dist/VoiceClone-Windows.zip

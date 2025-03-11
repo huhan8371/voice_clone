@@ -78,17 +78,11 @@ class TTSService:
         output_path: str,
         speaker_id: str,
         encoding: str = "mp3",
-        speed_ratio: float = 1.0
-    ) -> None:
+        speed_ratio: float = 1.0,
+        _return_response: bool = False
+    ) -> Optional[Dict]:
         """
-        合成语音并保存到文件
-        
-        Args:
-            text: 要转换的文本
-            output_path: 输出文件路径
-            speaker_id: 声音ID
-            encoding: 音频编码格式
-            speed_ratio: 语速
+        将文本合成为语音并保存到文件
         """
         audio_data = await self.synthesize(
             text=text, 
@@ -97,7 +91,20 @@ class TTSService:
             speed_ratio=speed_ratio
         )
         
-        with open(output_path, 'wb') as f:
-            f.write(audio_data)
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, json=data) as response:
+                result = await response.json()
+                
+                if result.get("code") != 0:
+                    raise Exception(f"合成失败: {result.get('message', '未知错误')}")
+                
+                audio_data = base64.b64decode(result["data"]["audio"])
+                
+                os.makedirs(os.path.dirname(output_path), exist_ok=True)
+                with open(output_path, "wb") as f:
+                    f.write(audio_data)
+                
+                if _return_response:
+                    return result
         
         logger.info(f"语音已保存到: {output_path}")

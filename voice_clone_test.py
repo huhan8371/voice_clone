@@ -74,61 +74,23 @@ class VoiceCloneTest:
     async def synthesize_speech(self):
         """合成语音"""
         print("\n=== 合成语音 ===")
-        # print(f"使用音色ID: {self.speaker_id}")
-            
-        # 首先检查音色状态
-        try:
-            status = await self.voice_cloning.get_status(self.speaker_id)
-            status_code = status.get('status')
-            if status_code not in (2, 4):
-                print("错误: 该音色尚未训练完成或不可用！")
-                return
-            print(f"音色状态: {self.status_map.get(status_code, '未知')}")
-        except Exception as e:
-            print(f"检查音色状态失败: {str(e)}")
+        
+        # 添加是否显示报文的选项
+        show_request = input("\n是否显示请求和响应报文 (y/n): ").strip().lower() == 'y'
+    
+        # 获取文本内容
+        text = self.get_text_content()
+        if not text:
             return
-            
-        while True:
-            # 获取用户输入的文件路径
-            print("\n请输入文本文件路径:")
-            print("Windows 示例: C:\\Users\\用户名\\Documents\\text.txt")
-            print("macOS 示例: /Users/用户名/Documents/text.txt")
-            file_path = input("路径: ").strip()
-            
-            if not file_path:
-                print("错误: 文件路径不能为空！")
-                continue
-                
-            try:
-                if not os.path.exists(file_path):
-                    print(f"错误: 文件 {file_path} 不存在！")
-                    continue
-                    
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    text = f.read().strip()
-                    
-                if not text:
-                    print(f"错误: 文件 {file_path} 为空！")
-                    continue
-                    
-                # 检查文本字节长度
-                text_bytes = len(text.encode('utf-8'))
-                print(f"\n待合成文本的字节长度: {text_bytes}")
-                    
-                if text_bytes > 1024:
-                    print("错误: 文本长度超过1024字节限制，请减少文件中的文本内容！")
-                    continue
-                    
-                print(f"\n待合成文本内容:\n{text}")
-                break
-            except Exception as e:
-                print(f"读取文件失败: {str(e)}")
-                continue
-            
+    
+        # 获取输出信息
+        prefix = input("\n请输入音频文件名前缀: ").strip()
+        output_dir = input("请输入保存目录路径: ").strip()
+        
         # 固定语速为 1.0
         speed_ratio = 1.0
         print("\n使用默认语速: 1.0")
-
+    
         while True:
             prefix = input("\n请输入音频文件名前缀: ").strip()
             if not prefix:

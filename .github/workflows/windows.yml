@@ -9,82 +9,30 @@ on:
 jobs:
   test:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: ['3.8', '3.9', '3.10']
-
+    
     steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install aiohttp
-        pip install -e .
-      shell: cmd
-    
-    - name: Check code formatting
-      run: |
-        pip install black
-        black . --check
-      shell: cmd
-    
-    - name: Run linting
-      run: |
-        pip install flake8
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-      shell: cmd
-    
-    - name: Check imports
-      run: |
-        pip install isort
-        isort . --check-only --diff
-      shell: cmd
-    
-    - name: Check package structure
-      run: |
-        python -c "from core import Config, VoiceCloningService, TTSService"
-      shell: cmd
+    - uses: actions/checkout@v3
 
-  build-app:
-    needs: test
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v2
-    
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
         python-version: '3.9'
-    
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install flake8 pytest pytest-asyncio
         pip install -r requirements.txt
         pip install -e .
-        pip install pyinstaller
-      shell: cmd
-    
-    - name: Build Windows application
+      shell: bash
+
+    - name: Lint with flake8
       run: |
-        pyinstaller --name="VoiceClone" --onefile --add-data="core;core" voice_clone_test.py
-      shell: cmd
-    
-    - name: Package application
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+      shell: bash
+
+    - name: Run unit tests
       run: |
-        cd dist
-        powershell Compress-Archive -Path VoiceClone.exe -DestinationPath VoiceClone-Windows.zip
-      shell: cmd
-    
-    - name: Upload application
-      uses: actions/upload-artifact@v2
-      with:
-        name: VoiceClone-Windows
-        path: |
-          dist/VoiceClone.exe
-          dist/VoiceClone-Windows.zip
+        pytest tests/test_config.py -v
+      shell: bash

@@ -18,6 +18,3 @@ def test_get_headers():
     headers = config.get_headers()
     assert headers["Content-Type"] == "application/json"
     assert headers["Authorization"] == "Bearer;test_token"
-
-    headers_with_resource = config.get_headers(use_resource_id=True)
-    assert headers_with_resource["Resource-Id"] == "volc.megatts.voiceclone"

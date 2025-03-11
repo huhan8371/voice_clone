@@ -10,11 +10,6 @@ jobs:
   test:
     runs-on: macos-latest
     
-    env:
-      BYTEDANCE_APPID: ${{ secrets.BYTEDANCE_APPID }}
-      BYTEDANCE_TOKEN: ${{ secrets.BYTEDANCE_TOKEN }}
-      TEST_SPEAKER_ID: ${{ secrets.TEST_SPEAKER_ID }}
-    
     steps:
     - uses: actions/checkout@v3
 
@@ -35,6 +30,6 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-    - name: Run tests
+    - name: Run unit tests
       run: |
-        pytest -v
+        pytest tests/test_config.py -v

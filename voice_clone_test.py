@@ -71,6 +71,28 @@ class VoiceCloneTest:
         except Exception as e:
             print(f"\n查询状态失败: {str(e)}")
     
+    def get_text_content(self) -> str:
+        """获取要转换的文本内容"""
+        print("\n请选择文本输入方式：")
+        print("1. 直接输入文本")
+        print("2. 从文件读取")
+        
+        choice = input("请选择 (1/2): ").strip()
+        
+        if choice == "1":
+            return input("\n请输入要转换的文本: ").strip()
+        elif choice == "2":
+            file_path = input("\n请输入文本文件路径: ").strip()
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    return f.read().strip()
+            except Exception as e:
+                print(f"\n读取文件失败: {str(e)}")
+                return ""
+        else:
+            print("\n无效的选择！")
+            return ""
+
     async def synthesize_speech(self):
         """合成语音"""
         print("\n=== 合成语音 ===")

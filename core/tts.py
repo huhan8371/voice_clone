@@ -1,7 +1,7 @@
 import base64
 import json
 import uuid
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import aiohttp
 import logging
 from .config import Config

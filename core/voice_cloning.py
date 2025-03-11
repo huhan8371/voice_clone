@@ -1,6 +1,7 @@
 import asyncio
 import base64
 import os
+import ssl
 from typing import Dict, Any
 import aiohttp
 import logging
@@ -54,7 +55,12 @@ class VoiceCloningService:
             "model_type": 1  # 使用2.0效果
         }
         
-        async with aiohttp.ClientSession() as session:
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        
+        connector = aiohttp.TCPConnector(ssl=ssl_context)
+        async with aiohttp.ClientSession(connector=connector) as session:
             async with session.post(url, json=data, headers=headers) as response:
                 if response.status != 200:
                     error_text = await response.text()
@@ -77,7 +83,12 @@ class VoiceCloningService:
             "speaker_id": speaker_id
         }
         
-        async with aiohttp.ClientSession() as session:
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        
+        connector = aiohttp.TCPConnector(ssl=ssl_context)
+        async with aiohttp.ClientSession(connector=connector) as session:
             async with session.post(url, json=data, headers=headers) as response:
                 if response.status != 200:
                     error_text = await response.text()

@@ -125,17 +125,9 @@ class VoiceCloneTest:
                 print(f"读取文件失败: {str(e)}")
                 continue
             
-        while True:
-            speed = input("\n请输入语速(0.2-3.0，默认1.0): ").strip() or "1.0"
-            try:
-                speed_ratio = float(speed)
-                if not 0.2 <= speed_ratio <= 3.0:
-                    print("错误: 语速必须在0.2到3.0之间！")
-                    continue
-                break
-            except ValueError:
-                print("错误: 请输入有效的数字！")
-                continue
+        # 固定语速为 1.0
+        speed_ratio = 1.0
+        print("\n使用默认语速: 1.0")
 
         while True:
             prefix = input("\n请输入音频文件名前缀: ").strip()

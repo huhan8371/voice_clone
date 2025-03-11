@@ -1,1 +1,4 @@
-如果你能告诉我你在GitHub Actions页面上看到的具体状态（是黄色圆圈、红色X还是其他状态），我可以提供更具体的帮助来解决问题。
+By learning this course,you can：
+Understand the Data Center，understand the representative virtual machine technology, KVM.
+Understand Cloud Computing，understand the concepts related to cloud servers and the associated cloud technologies.
+Understand Tencent Cloud，understand how CVM products and cloud vendors implement security protection forcloud servers.

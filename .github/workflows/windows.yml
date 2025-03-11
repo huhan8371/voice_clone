@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-and-build:
     runs-on: windows-latest
     
     steps:
@@ -24,6 +24,7 @@ jobs:
         pip install flake8 pytest pytest-asyncio
         pip install -r requirements.txt
         pip install -e .
+        pip install pyinstaller
       shell: bash
 
     - name: Lint with flake8
@@ -36,3 +37,14 @@ jobs:
       run: |
         pytest tests/test_config.py -v
       shell: bash
+
+    - name: Build Windows App
+      run: |
+        pyinstaller --name="Voice Clone" --windowed --onefile voice_clone_test.py
+      shell: bash
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: VoiceClone-Windows
+        path: dist/*

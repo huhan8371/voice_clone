@@ -105,10 +105,6 @@ class VoiceCloneTest:
         if not text:
             return
     
-        # 获取输出信息
-        prefix = input("\n请输入音频文件名前缀: ").strip()
-        output_dir = input("请输入保存目录路径: ").strip()
-        
         # 固定语速为 1.0
         speed_ratio = 1.0
         print("\n使用默认语速: 1.0")
@@ -124,10 +120,9 @@ class VoiceCloneTest:
             break
             
         try:
-            
             while True:
                 # 获取用户输入的保存路径
-                save_dir = input("\n请输入保存目录路径: ").strip()
+                save_dir = input("请输入保存目录路径: ").strip()
                 if not save_dir:
                     print("错误: 保存目录路径不能为空！")
                     continue
@@ -150,16 +145,21 @@ class VoiceCloneTest:
                     continue
             
             print("\n正在合成语音...")
+            if show_request:
+                print("\n请求信息:")
+                print(f"文本内容: {text}")
+                print(f"音色ID: {self.speaker_id}")
+                print(f"语速: {speed_ratio}")
+                print(f"输出路径: {output_path}")
+            
             await self.tts.synthesize_to_file(
                 text=text,
                 output_path=output_path,
                 speaker_id=self.speaker_id,
                 speed_ratio=speed_ratio
             )
-            print(f"语音已保存到: {output_path}")
+            print(f"\n语音已保存到: {output_path}")
             
-        except ValueError:
-            print("错误: 语速必须是有效的数字！")
         except Exception as e:
             print(f"\n合成语音失败: {str(e)}")
 

@@ -4,6 +4,7 @@ import uuid
 from typing import Dict, Any, Optional
 import aiohttp
 import logging
+import ssl
 from .config import Config
 
 logging.basicConfig(level=logging.INFO)
@@ -12,6 +13,10 @@ logger = logging.getLogger(__name__)
 class TTSService:
     def __init__(self, config: Config):
         self.config = config
+        # 创建自定义 SSL 上下文
+        self.ssl_context = ssl.create_default_context()
+        self.ssl_context.check_hostname = False
+        self.ssl_context.verify_mode = ssl.CERT_NONE
         
     async def synthesize(
         self,
@@ -57,7 +62,10 @@ class TTSService:
         }
         
         async with aiohttp.ClientSession() as session:
-            async with session.post(url, json=request_data, headers=self.config.get_headers()) as response:
+            async with session.post(url, 
+                                  json=request_data, 
+                                  headers=self.config.get_headers(),
+                                  ssl=self.ssl_context) as response:
                 if response.status != 200:
                     error_text = await response.text()
                     raise Exception(f"语音合成失败: {error_text}")

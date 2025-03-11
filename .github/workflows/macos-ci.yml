@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  test-and-build:
     runs-on: macos-latest
     
     steps:
@@ -24,6 +24,7 @@ jobs:
         pip install flake8 pytest pytest-asyncio
         pip install -r requirements.txt
         pip install -e .
+        pip install pyinstaller
 
     - name: Lint with flake8
       run: |
@@ -33,3 +34,16 @@ jobs:
     - name: Run unit tests
       run: |
         pytest tests/test_config.py -v
+
+    - name: Build macOS App
+      run: |
+        pyinstaller --name="Voice Clone" \
+                   --windowed \
+                   --onefile \
+                   voice_clone_test.py
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: VoiceClone-macOS
+        path: dist/*

@@ -43,7 +43,7 @@ jobs:
                    voice_clone_test.py
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: VoiceClone-macOS
         path: dist/*

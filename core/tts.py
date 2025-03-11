@@ -84,27 +84,24 @@ class TTSService:
         """
         将文本合成为语音并保存到文件
         """
-        audio_data = await self.synthesize(
-            text=text, 
-            speaker_id=speaker_id, 
-            encoding=encoding,
-            speed_ratio=speed_ratio
-        )
-        
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers, json=data) as response:
-                result = await response.json()
+        try:
+            audio_data = await self.synthesize(
+                text=text, 
+                speaker_id=speaker_id, 
+                encoding=encoding,
+                speed_ratio=speed_ratio
+            )
+            
+            import os
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
+            with open(output_path, "wb") as f:
+                f.write(audio_data)
+            
+            logger.info(f"语音已保存到: {output_path}")
+            
+            if _return_response:
+                return {"code": 0, "message": "success", "data": {"audio": audio_data}}
                 
-                if result.get("code") != 0:
-                    raise Exception(f"合成失败: {result.get('message', '未知错误')}")
-                
-                audio_data = base64.b64decode(result["data"]["audio"])
-                
-                os.makedirs(os.path.dirname(output_path), exist_ok=True)
-                with open(output_path, "wb") as f:
-                    f.write(audio_data)
-                
-                if _return_response:
-                    return result
-        
-        logger.info(f"语音已保存到: {output_path}")
+        except Exception as e:
+            logger.error(f"合成失败: {str(e)}")
+            raise

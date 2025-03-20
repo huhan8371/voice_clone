@@ -22,6 +22,7 @@ class TTSService:
         self,
         text: str,
         speaker_id: str,
+        text_type: str = "plain",
         encoding: str = "mp3",
         speed_ratio: float = 1.0,
     ) -> bytes:
@@ -31,6 +32,7 @@ class TTSService:
         Args:
             text: 要转换的文本
             speaker_id: 声音ID（S_开头）
+            text_type: 文本类型 (plain/ssml)
             encoding: 音频编码格式 (wav/pcm/ogg_opus/mp3)
             speed_ratio: 语速 [0.2-3.0]
             
@@ -56,7 +58,7 @@ class TTSService:
             "request": {
                 "reqid": str(uuid.uuid4()),
                 "text": text,
-                "text_type": "plain",
+                "text_type": text_type,
                 "operation": "query"
             }
         }
@@ -85,17 +87,28 @@ class TTSService:
         text: str,
         output_path: str,
         speaker_id: str,
+        text_type: str = "plain",
         encoding: str = "mp3",
         speed_ratio: float = 1.0,
         _return_response: bool = False
     ) -> Optional[Dict]:
         """
         将文本合成为语音并保存到文件
+        
+        Args:
+            text: 要转换的文本
+            output_path: 输出文件路径
+            speaker_id: 声音ID
+            text_type: 文本类型 (plain/ssml)
+            encoding: 音频编码格式
+            speed_ratio: 语速
+            _return_response: 是否返回响应数据
         """
         try:
             audio_data = await self.synthesize(
                 text=text, 
                 speaker_id=speaker_id, 
+                text_type=text_type,
                 encoding=encoding,
                 speed_ratio=speed_ratio
             )

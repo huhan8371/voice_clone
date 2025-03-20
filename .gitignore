@@ -1,4 +1,7 @@
+# macOS
 .DS_Store
+
+# Python
 *.spec
 build/
 dist/
@@ -7,3 +10,9 @@ __pycache__/
 .pytest_cache/
 .coverage
 htmlcov/
+*.egg-info/
+
+# Project specific
+.env
+output/
+*.mp3

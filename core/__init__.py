@@ -1,5 +1,7 @@
-from .config import Config
-from .voice_cloning import VoiceCloningService
-from .tts import TTSService
+"""Core package for voice cloning functionality."""
 
-__all__ = ['Config', 'VoiceCloningService', 'TTSService']
+from .config import Config
+from .tts import TTSService
+from .voice_cloning import VoiceCloningService
+
+__all__ = ['Config', 'TTSService', 'VoiceCloningService']
